@@ -1,0 +1,365 @@
+<title>Kandersteg Donation Tracker</title>
+<style>
+/* Layout: single column, poster-style header, progress card, then supporting sections. */
+:root {
+  --sky: #dcebf2;
+  --navy: #0f2f4d;
+  --green: #2e5e45;
+  --gold: #f3e3a8;
+  --red: #d52b1e;
+  --ink: #0f2f4d;
+  --muted: #4d6475;
+  --card: #ffffff;
+  --line: #c9d9e3;
+  --bg: #eef5f9;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1e2e;
+    --sky: #14324a;
+    --card: #15283a;
+    --ink: #e7f0f6;
+    --muted: #9fb6c6;
+    --line: #2b4358;
+    --navy: #9cc4e0;
+    --gold: #f3e3a8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1e2e;
+  --sky: #14324a;
+  --card: #15283a;
+  --ink: #e7f0f6;
+  --muted: #9fb6c6;
+  --line: #2b4358;
+  --navy: #9cc4e0;
+  --gold: #f3e3a8;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Barlow", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 16px 32px;
+}
+h1, h2, h3 { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; text-wrap: balance; margin: 0; }
+.wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+
+/* Header */
+.hero {
+  background: var(--sky);
+  border-radius: 14px;
+  padding: 24px;
+  display: grid;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.hero h1 { font-size: clamp(40px, 9vw, 64px); line-height: 0.95; font-weight: 800; color: var(--navy); text-transform: uppercase; }
+.hero .sub { color: var(--muted); font-weight: 500; }
+.hero .mountain { display: block; width: 100%; height: auto; max-width: 100%; margin-top: 8px; }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 0;
+}
+.card h2 { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+
+/* Progress */
+.amount { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+.amount strong { font-family: "Barlow Condensed", sans-serif; font-size: 48px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.amount span { color: var(--muted); }
+.bar {
+  margin-top: 16px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--sky);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  position: absolute; inset: 0 auto 0 0;
+  width: 0%;
+  background: linear-gradient(90deg, var(--green), #4f8a68);
+  border-radius: 999px;
+  transition: width 0.8s ease;
+}
+.ticks {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--muted); margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.note { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+
+/* Ticker */
+.ticker {
+  background: var(--navy);
+  color: var(--bg);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+.ticker-label {
+  flex: none;
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 14px;
+  align-self: stretch;
+  display: flex; align-items: center;
+}
+.ticker-viewport { overflow: hidden; flex: 1; min-width: 0; }
+.ticker-track {
+  display: inline-flex;
+  gap: 40px;
+  white-space: nowrap;
+  padding-left: 16px;
+  animation: scroll 40s linear infinite;
+}
+.ticker:hover .ticker-track { animation-play-state: paused; }
+.ticker-track span { font-weight: 500; }
+.ticker-track b { color: var(--gold); font-weight: 700; }
+@keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; flex-wrap: wrap; white-space: normal; }
+  .bar-fill { transition: none; }
+}
+
+/* Donations list */
+.list { list-style: none; margin: 0; padding: 0; display: grid; }
+.list li {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  min-width: 0;
+}
+.list li:first-child { border-top: 0; }
+.list .who { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.list .when { color: var(--muted); font-size: 13px; }
+.list .amt { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 20px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--green); }
+.empty { color: var(--muted); margin: 0; }
+button {
+  font: inherit;
+  font-weight: 600;
+  color: var(--navy);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+button:focus-visible, a:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+/* Ways to donate */
+.ways { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.way { border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+.way h3 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.way p { margin: 0; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.btn {
+  display: inline-block;
+  margin-top: 12px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.btn[aria-disabled="true"] { background: var(--line); color: var(--muted); pointer-events: none; }
+
+/* Sponsors */
+.sponsor {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+.sponsor:last-child { margin-bottom: 0; }
+.sponsor-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+.sponsor h3 { font-size: 22px; font-weight: 700; color: var(--navy); }
+.tag { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); }
+.sponsor ul { margin: 0; padding-left: 18px; color: var(--ink); }
+.sponsor .contact { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+
+footer { text-align: center; color: var(--muted); font-size: 13px; padding-top: 4px; }
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Lusk 153 Scout Group</div>
+    <h1>Climb to Kandersteg</h1>
+    <div class="sub">Swiss Alps · July 2027</div>
+    <svg class="mountain" viewBox="0 0 680 120" aria-hidden="true" preserveAspectRatio="xMidYMax meet">
+      <path d="M0 120 L120 60 L190 90 L330 14 L430 80 L520 40 L680 120 Z" fill="#a9c4d4"/>
+      <path d="M0 120 L150 70 L260 100 L340 36 L440 96 L560 58 L680 120 Z" fill="#2e5e45"/>
+      <path d="M318 40 L340 22 L362 40 L352 36 L340 44 L328 36 Z" fill="#fff"/>
+    </svg>
+  </header>
+
+  <section class="card" aria-labelledby="progress-h">
+    <h2 id="progress-h">Raised so far</h2>
+    <div class="amount">
+      <strong id="raised">€0</strong>
+      <span id="goal-text">of our €15,000 summit</span>
+    </div>
+    <div class="bar" role="progressbar" aria-label="Fundraising progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar">
+      <div class="bar-fill" id="fill"></div>
+    </div>
+    <div class="ticks"><span>€0</span><span>€7.5k</span><span>€15k</span></div>
+    <p class="note">Every €1,000 raised is another step up the mountain.</p>
+  </section>
+
+  <section class="ticker" aria-label="Recent donations">
+    <div class="ticker-label">Latest</div>
+    <div class="ticker-viewport"><div class="ticker-track" id="ticker"></div></div>
+  </section>
+
+  <section class="card" aria-labelledby="ways-h">
+    <h2 id="ways-h">Ways to donate</h2>
+    <div class="ways">
+      <div class="way">
+        <h3>Online</h3>
+        <p>Donate securely with a card or online payment.</p>
+        <a class="btn" id="donate-btn" href="#" aria-disabled="true">Link coming soon</a>
+      </div>
+      <div class="way">
+        <h3>Bank transfer</h3>
+        <p>Details to be added. Please use "Kandersteg" as the reference.</p>
+      </div>
+      <div class="way">
+        <h3>Cash or card to a leader</h3>
+        <p>Hand it to any Lusk 153 leader. They will log it for us.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="donors-h">
+    <h2 id="donors-h">Our donors</h2>
+    <ul class="list" id="donors"></ul>
+    <button type="button" id="toggle" hidden>Show all</button>
+  </section>
+
+  <section class="card" aria-labelledby="sponsors-h">
+    <h2 id="sponsors-h">Our sponsors</h2>
+    <div id="sponsors"></div>
+  </section>
+
+  <footer>Lusk 153 Scout Group · Kandersteg 2027</footer>
+</div>
+
+<script>
+// ---- Edit these to update the page ----
+const CAMP = {
+  goal: 15000,
+  raised: 0,            // update manually for now
+  donateUrl: "",        // paste the donation link here once you have one
+};
+
+// date: "YYYY-MM-DD". name: "" or "Anonymous" hides the name.
+const DONATIONS = [
+  // { name: "Jane Murphy", amount: 50, date: "2026-10-10" },
+  // { name: "Anonymous", amount: 200, date: "2026-10-11" },
+  { name: "Prestige ProClean 360", amount: 12, date: "2026-10-12" }, // 20% of a €60 gutter clean
+];
+
+const SPONSORS = [
+  {
+    name: "Prestige ProClean 360",
+    tag: "Sponsor offer",
+    details: [
+      "Gutter cleaning, from €60 (2-bed) to €90 (5-bed)",
+      "20% of earnings made from this offer go to Lusk Scouts Summer Camp 2027",
+      "Mention Lusk Scouts when booking",
+    ],
+    contact: "087 332 4212 · info@prestigeproclean360.com",
+  },
+  // One-off donor example:
+  // { name: "Business name", tag: "Thank you", details: ["Donated €500"], contact: "" },
+];
+
+// ---- Rendering ----
+const eur = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const sorted = [...DONATIONS].sort((a, b) => b.date.localeCompare(a.date));
+const total = DONATIONS.reduce((n, d) => n + d.amount, 0) + CAMP.raised;
+const pct = Math.min(100, (total / CAMP.goal) * 100);
+
+document.getElementById("raised").textContent = eur.format(total);
+document.getElementById("bar").setAttribute("aria-valuenow", Math.round(pct));
+requestAnimationFrame(() => { document.getElementById("fill").style.width = pct + "%"; });
+
+const nameOf = d => (!d.name || d.name === "Anonymous") ? "Anonymous" : d.name;
+
+// Ticker: latest 10 donations, duplicated so the loop is seamless.
+const ticker = document.getElementById("ticker");
+if (sorted.length === 0) {
+  ticker.innerHTML = '<span>No donations yet. Be the first to help us climb.</span>';
+  ticker.style.animation = "none";
+} else {
+  const items = sorted.slice(0, 10).map(d => `<span><b>${eur.format(d.amount)}</b> from ${esc(nameOf(d))}</span>`).join("");
+  ticker.innerHTML = items + items;
+}
+
+// Donor list with show all / show less.
+const list = document.getElementById("donors");
+const toggle = document.getElementById("toggle");
+const LIMIT = 5;
+function renderDonors(showAll) {
+  if (sorted.length === 0) {
+    list.innerHTML = '<li class="empty">Donations will appear here.</li>';
+    toggle.hidden = true;
+    return;
+  }
+  const rows = showAll ? sorted : sorted.slice(0, LIMIT);
+  list.innerHTML = rows.map(d => `
+    <li>
+      <div><div class="who">${esc(nameOf(d))}</div><div class="when">${esc(d.date)}</div></div>
+      <div class="amt">${eur.format(d.amount)}</div>
+    </li>`).join("");
+  toggle.hidden = sorted.length <= LIMIT;
+  toggle.textContent = showAll ? "Show less" : "Show all";
+  toggle.onclick = () => renderDonors(!showAll);
+}
+renderDonors(false);
+
+// Donate button
+const btn = document.getElementById("donate-btn");
+if (CAMP.donateUrl) {
+  btn.href = CAMP.donateUrl;
+  btn.target = "_blank";
+  btn.rel = "noopener";
+  btn.textContent = "Donate now";
+  btn.removeAttribute("aria-disabled");
+}
+
+// Sponsors
+document.getElementById("sponsors").innerHTML = SPONSORS.map(s => `
+  <article class="sponsor">
+    <div class="sponsor-head"><h3>${esc(s.name)}</h3><span class="tag">${esc(s.tag)}</span></div>
+    <ul>${s.details.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    ${s.contact ? `<div class="contact">${esc(s.contact)}</div>` : ""}
+  </article>`).join("") || '<p class="empty">Sponsors will be listed here.</p>';
+</script>

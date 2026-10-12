@@ -1,0 +1,10 @@
+# Claude Code
+.claude/settings.local.json
+.claude/scratchpad/
+CLAUDE.local.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
