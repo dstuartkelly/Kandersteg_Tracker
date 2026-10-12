@@ -2,6 +2,7 @@
 .claude/settings.local.json
 .claude/scratchpad/
 CLAUDE.local.md
+.claude/notes.md
 
 # OS / editor
 .DS_Store

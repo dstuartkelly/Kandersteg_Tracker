@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kandersteg Tracker Admin (Mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* Mock admin: same palette as index.html. Nothing here is secure; see the banner. */
+:root {
+  --sky: #dcebf2; --navy: #0f2f4d; --green: #2e5e45; --red: #d52b1e;
+  --ink: #0f2f4d; --muted: #4d6475; --card: #ffffff; --line: #c9d9e3; --bg: #eef5f9;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1e2e; --sky: #14324a; --card: #15283a; --ink: #e7f0f6;
+    --muted: #9fb6c6; --line: #2b4358; --navy: #9cc4e0; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "Barlow", system-ui, sans-serif; padding: 16px 16px 32px; }
+h1, h2 { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; margin: 0; color: var(--navy); text-wrap: balance; }
+h1 { font-size: 36px; text-transform: uppercase; font-weight: 800; }
+h2 { font-size: 24px; margin-bottom: 12px; }
+.wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+.banner { background: #fff3cd; color: #5c4400; border: 1px solid #e6cf7a; border-radius: 10px; padding: 12px 16px; font-size: 14px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; min-width: 0; }
+form { display: grid; gap: 12px; }
+.row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+label { display: grid; gap: 4px; font-weight: 600; font-size: 14px; }
+input, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+textarea { min-height: 72px; resize: vertical; }
+input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+button { font: inherit; font-weight: 600; color: var(--navy); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; justify-self: start; }
+button.primary { background: var(--green); border-color: var(--green); color: #fff; }
+button.danger { color: var(--red); padding: 4px 10px; }
+.list { list-style: none; margin: 16px 0 0; padding: 0; }
+.list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); min-width: 0; }
+.list .txt { min-width: 0; overflow-wrap: anywhere; }
+.list small { color: var(--muted); display: block; }
+.empty { color: var(--muted); margin: 12px 0 0; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; font-size: 13px; max-height: 320px; }
+.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.top a { color: var(--navy); font-weight: 600; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">
+    <strong>Mock admin page.</strong> The login below is a placeholder and is <em>not secure</em>.
+    Anyone can open this file. Data is saved only in this browser (localStorage) and does <em>not</em> change the live site.
+    Use <em>Export</em> to copy the data into <code>index.html</code>, or replace this with a real backend (see <code>.claude/notes.md</code>).
+  </div>
+
+  <!-- Mock login -->
+  <section class="card" id="login">
+    <h2>Admin sign in</h2>
+    <form id="loginForm">
+      <div class="row">
+        <label>Username <input name="user" autocomplete="username" required></label>
+        <label>Password <input name="pass" type="password" autocomplete="current-password" required></label>
+      </div>
+      <button class="primary" type="submit">Sign in</button>
+      <small class="empty">Mock only: any username works with the password <code>demo</code>.</small>
+    </form>
+  </section>
+
+  <div id="app" hidden class="wrap" style="max-width:none">
+    <div class="top">
+      <h1>Tracker admin</h1>
+      <span><a href="index.html">View site</a> · <button id="logout" type="button">Sign out</button></span>
+    </div>
+
+    <section class="card">
+      <h2>Camp settings</h2>
+      <form id="campForm">
+        <div class="row">
+          <label>Goal (€) <input name="goal" type="number" min="0" step="1" required></label>
+          <label>Manual raised adjustment (€) <input name="raised" type="number" min="0" step="1" required></label>
+        </div>
+        <label>Donation link <input name="donateUrl" type="url" placeholder="https://… (leave empty for “Link coming soon”)"></label>
+        <button class="primary" type="submit">Save settings</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Add donation</h2>
+      <form id="donForm">
+        <div class="row">
+          <label>Name <input name="name" placeholder="Anonymous to hide" required></label>
+          <label>Amount (€) <input name="amount" type="number" min="0.01" step="0.01" required></label>
+          <label>Date <input name="date" type="date" required></label>
+        </div>
+        <button class="primary" type="submit">Add donation</button>
+      </form>
+      <ul class="list" id="donList"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Add sponsor</h2>
+      <form id="spForm">
+        <div class="row">
+          <label>Name <input name="name" required></label>
+          <label>Tag <input name="tag" value="Sponsor offer" required></label>
+        </div>
+        <label>Details (one per line) <textarea name="details" required></textarea></label>
+        <label>Contact <input name="contact"></label>
+        <button class="primary" type="submit">Add sponsor</button>
+      </form>
+      <ul class="list" id="spList"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Export</h2>
+      <p class="empty" style="margin:0 0 12px">Replace the data block at the top of the <code>&lt;script&gt;</code> in <code>index.html</code> with this, then commit and push.</p>
+      <pre id="out"></pre>
+      <div class="top">
+        <button class="primary" id="copy" type="button">Copy to clipboard</button>
+        <button class="danger" id="reset" type="button">Reset to defaults</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+// Defaults mirror the current data in index.html.
+const DEFAULTS = {
+  camp: { goal: 15000, raised: 0, donateUrl: "" },
+  donations: [{ name: "Prestige ProClean 360", amount: 12, date: "2026-10-12" }],
+  sponsors: [{
+    name: "Prestige ProClean 360",
+    tag: "Sponsor offer",
+    details: [
+      "Gutter cleaning, from €60 (2-bed) to €90 (5-bed)",
+      "20% of earnings made from this offer go to Lusk Scouts Summer Camp 2027",
+      "Mention Lusk Scouts when booking",
+    ],
+    contact: "087 332 4212 · info@prestigeproclean360.com",
+  }],
+};
+const KEY = "kandersteg-admin-mock";
+const $ = (id) => document.getElementById(id);
+
+// localStorage can throw (private windows, blocked storage), so fall back to memory.
+let data = structuredClone(DEFAULTS);
+try { const s = localStorage.getItem(KEY); if (s) data = JSON.parse(s); } catch {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {} render(); }
+
+let authed = false; // mock session, intentionally not persisted
+function show() { $("login").hidden = authed; $("app").hidden = !authed; }
+
+$("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (new FormData(e.target).get("pass") === "demo") { authed = true; show(); render(); }
+  else alert("Wrong password (hint: demo)");
+});
+$("logout").addEventListener("click", () => { authed = false; show(); });
+
+$("campForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  data.camp = { goal: +f.get("goal"), raised: +f.get("raised"), donateUrl: f.get("donateUrl").trim() };
+  save();
+});
+$("donForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  data.donations.push({ name: f.get("name").trim(), amount: +f.get("amount"), date: f.get("date") });
+  e.target.reset(); setToday(); save();
+});
+$("spForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  data.sponsors.push({
+    name: f.get("name").trim(),
+    tag: f.get("tag").trim(),
+    details: f.get("details").split("\n").map((s) => s.trim()).filter(Boolean),
+    contact: f.get("contact").trim(),
+  });
+  e.target.reset(); e.target.tag.value = "Sponsor offer"; save();
+});
+
+function fillList(ul, items, label, sub, remove) {
+  ul.replaceChildren();
+  if (!items.length) { const li = document.createElement("li"); li.textContent = "Nothing yet."; ul.append(li); return; }
+  items.forEach((item, i) => {
+    const li = document.createElement("li");
+    const txt = document.createElement("div"); txt.className = "txt";
+    txt.textContent = label(item);
+    const small = document.createElement("small"); small.textContent = sub(item);
+    txt.append(small);
+    const btn = document.createElement("button");
+    btn.className = "danger"; btn.type = "button"; btn.textContent = "Delete";
+    btn.addEventListener("click", () => { remove(i); save(); });
+    li.append(txt, btn); ul.append(li);
+  });
+}
+
+const js = (v) => JSON.stringify(v);
+function exportText() {
+  const c = data.camp;
+  const dons = [...data.donations].sort((a, b) => a.date.localeCompare(b.date))
+    .map((d) => `  { name: ${js(d.name)}, amount: ${d.amount}, date: ${js(d.date)} },`).join("\n");
+  const sps = data.sponsors.map((s) =>
+    `  {\n    name: ${js(s.name)},\n    tag: ${js(s.tag)},\n    details: [\n${s.details.map((x) => "      " + js(x) + ",").join("\n")}\n    ],\n    contact: ${js(s.contact)},\n  },`
+  ).join("\n");
+  return `const CAMP = {\n  goal: ${c.goal},\n  raised: ${c.raised},\n  donateUrl: ${js(c.donateUrl)},\n};\n\nconst DONATIONS = [\n${dons}\n];\n\nconst SPONSORS = [\n${sps}\n];`;
+}
+
+function render() {
+  const f = $("campForm");
+  f.goal.value = data.camp.goal; f.raised.value = data.camp.raised; f.donateUrl.value = data.camp.donateUrl;
+  fillList($("donList"), data.donations,
+    (d) => `${d.name}: €${d.amount}`, (d) => d.date, (i) => data.donations.splice(i, 1));
+  fillList($("spList"), data.sponsors,
+    (s) => s.name, (s) => `${s.tag} · ${s.details.length} detail line(s)`, (i) => data.sponsors.splice(i, 1));
+  $("out").textContent = exportText();
+}
+
+$("copy").addEventListener("click", async (e) => {
+  try { await navigator.clipboard.writeText(exportText()); e.target.textContent = "Copied"; }
+  catch { e.target.textContent = "Copy failed: select the text manually"; }
+  setTimeout(() => (e.target.textContent = "Copy to clipboard"), 2000);
+});
+$("reset").addEventListener("click", () => {
+  if (confirm("Discard all changes made in this browser?")) { data = structuredClone(DEFAULTS); save(); }
+});
+
+function setToday() { $("donForm").date.value = new Date().toISOString().slice(0, 10); }
+setToday(); show(); render();
+</script>
+</body>
+</html>

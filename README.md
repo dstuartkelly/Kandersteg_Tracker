@@ -25,6 +25,15 @@ There is no backend. Edit the data at the top of the `<script>` block in `index.
 
 While `donateUrl` is empty, the donate button shows "Link coming soon".
 
+## Mock admin page
+
+`admin.html` is a mock admin page for adding donations and sponsors and editing camp settings, without hand-editing the code.
+
+- The login is a placeholder (any username, password `demo`) and is **not secure**.
+- Changes are saved only in the browser's localStorage and do **not** change the live site.
+- Use the Export section to copy the generated `CAMP`, `DONATIONS` and `SPONSORS` block into `index.html`, then commit and push.
+- The page is public on GitHub Pages if deployed. Replace it with a real backend (for example a Google Sheet or Supabase) before relying on it for access control.
+
 ## Hosting
 
 Enable GitHub Pages under Settings → Pages, using the `main` branch.
